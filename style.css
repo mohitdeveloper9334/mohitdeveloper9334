@@ -1,0 +1,2259 @@
+@mixin flex ($dir: row, $wrap: wrap, $ai: center, $jc: center, $ac: center){
+  display: flex;
+  flex-direction: $dir;
+  flex-wrap: $wrap;
+  align-items: $ai;
+  justify-content: $jc;
+  align-content: $ac;
+}
+@mixin imagen ($url: '', $size: cover, $posicion: center, $repeat: no-repeat, $parallax: false) {
+  @if  $url != '' {
+    background-image: url($url);
+  }
+  background-size: $size;
+  background-position: $posicion;
+  background-repeat: $repeat;
+  @if $parallax == true {
+    background-attachment: fixed;
+  }
+}
+$negro: #000;
+$blanco: #fff;
+$mainColor: #152839;
+$grayDark: #1b1b1b;
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
+
+@keyframes relojAnalogico{
+  to{transform: rotate(360deg)}
+}
+@keyframes shake{
+  0%{transform: rotate(-2deg);}
+  100%{transform: rotate(2deg);}
+}
+@keyframes shake-2{
+  0%{transform: rotate(-1deg);}
+  100%{transform: rotate(1deg);}
+}
+@keyframes grabarPantalla{
+  0%{
+    opacity: 1;
+    transform: scale(1);
+  }
+  100%{
+    opacity: 0;
+    transform: scale(.9);
+  }
+}
+
+body{
+  overflow-x: hidden;
+  color: #666;
+  margin: 0 auto;
+  *{
+    font-family: 'Roboto', sans-serif;
+  }
+  p, h1, h2, h3, h4, h5, h6{
+    margin: 0;
+  }
+  a {
+    color: #666;
+    text-decoration: none;
+  }
+  // ul, li{
+  //   padding: 0;
+  //   margin: 0;
+  //   list-style-type: none;
+  // }
+}
+
+#fixedApp{
+  position: fixed;
+  &.widgetFull{
+    height: calc(76px * 2);
+    .icono{
+      width: 236px;
+      height: calc(100% - 26px);
+    }
+  }
+  &[data-app="widgetFullCalendario"]{
+    .icono{
+      @include flex;
+      padding: 10px;
+      box-sizing: border-box;
+      .eventos{
+        width: calc(100% - 112px);
+        font-size: 12px;
+      }
+      .calendarioWrapper{
+        width: 112px;
+        .mes{
+          .mesName{
+            color: #d24f54;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+          }
+          .calendarioTabla{
+            .tablaHeader, .tablaContent{
+              @include flex($jc: flex-start);
+              >*{
+                width: 16px;
+                text-align: center;
+                font-size: 8px;
+                font-weight: 600;
+              }
+            }
+            .tablaHeader{
+              margin: 5px auto;
+            }
+            .tablaContent{
+              .diaNum{
+                @include flex;
+                height: 16px;
+                &.activo{
+                  color: $blanco;
+                  background-color: #d24f54;
+                  border-radius: 50%;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  &.calendarioDinamico{
+    .fechaWrapper{
+      @include flex(column);
+      width: 100%;
+      height: 100%;
+      padding: 5px;
+      box-sizing: border-box;
+      .diaNom{
+        color: #d24f54;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .diaNum{
+        color: $negro;
+        font-size: 22px;
+        font-weight: 300;
+      }
+    }
+  }
+  &.relojDinamico{
+    .relojWrapper{
+      @include flex;
+      width: 100%;
+      height: 100%;
+      padding: 3px;
+      background-color: $negro;
+      box-sizing: border-box;
+      .reloj{
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-color: $blanco;
+        position: relative;
+        overflow: hidden;
+        .numeros{
+          .numero{
+            position: absolute;
+            bottom: 50%;
+            left: 0;
+            right: 0;
+            margin: auto;
+            width: 10px;
+            height: calc(50% - 1px);
+            color: $negro;
+            font-size: 5px;
+            font-weight: 600;
+            text-align: center;
+            transform-origin: bottom;
+            @for $i from 1 through 12{
+              &:nth-child(#{$i}){
+                transform: rotate((360deg / 12) * $i);
+                &:before{
+                  transform: rotate((360deg / 12) * -$i);
+                }
+              }
+            }
+            &:before{
+              content: attr(data-num);
+              display: block;
+            }
+          }
+        }
+        .manecillas{
+          &:before{
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background-color: $negro;
+          }
+          .manecilla{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            &.hora{
+              .barra{
+                animation-duration: 21600s;
+                &:before{
+                  height: calc(50% - 10px);
+                }
+              }
+            }
+            &.minutos{
+              .barra{
+                animation-duration: 3600s;
+              }
+            }
+            &.segundos{
+              .barra{
+                &:before{
+                  background-color: #d24f54;
+                  bottom: 40%;
+                  height: calc(60% - 4px);
+                  animation-duration: 60s;
+                  animation-timing-function: steps(60);
+                }
+              }
+            }
+            .barra{
+              position: absolute;
+              width: 100%;
+              height: 100%;
+              animation: relojAnalogico 60s infinite linear;
+              &:before{
+                content: "";
+                position: absolute;
+                bottom: 50%;
+                left: 0;
+                right: 0;
+                margin: auto;
+                width: 1px;
+                height: calc(50% - 4px);
+                background-color: $negro;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .icono{
+    @include imagen;
+    width: 50px;
+    height: 50px;
+    margin: 3px auto;
+    border-radius: 10px;
+    background-color: $blanco;
+    overflow: hidden;
+  }
+  .nombre, .notificacion{
+    display: none;
+  }
+}
+.fixedMenuFixedApp{
+  position: fixed;
+  width: 190px;
+  top: 413px;
+  left: 300px;
+  border-radius: 15px;
+  background-color: rgba($blanco,.8);
+  .menuOption{
+    @include flex($jc: space-between);
+    padding: 7px 15px;
+    font-size: 12px;
+    color: $negro;
+    cursor: pointer;
+    box-sizing: border-box;
+    &.eliminar{
+      color: red;
+    }
+    &:not(:last-child){
+      border-bottom: 1px solid rgba($negro,.1);
+    }
+    .icono{
+      width: 18px;
+      height: 18px;
+      margin-left: 10px;
+      svg{
+        width: 100%;
+        height: 100%;
+        path, circle{
+          fill: none;
+          stroke: currentColor;
+          stroke-width: 2;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+        }
+      }
+    }
+  }
+}
+#iOSAlert{
+  @include flex;
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba($negro,.3);
+  backdrop-filter: blur(2px);
+  z-index: 10;
+  .contenedor{
+    max-width: 70%;
+    padding-top: 10px;
+    border-radius: 10px;
+    text-align: center;
+    background-color: rgba($blanco,.95);
+    box-shadow: 0 0 10px 0 rgba($negro,.1);
+    box-sizing: border-box;
+    transition: cubic-bezier(0.68, -0.55, 0.27, 1.55) all 0.3s;
+    &.hidAnim{
+      opacity: 0;
+      transform: scale(1.1);
+    }
+    p{
+      color: $negro;
+      font-size: 12px;
+      padding: 0 10px;
+      &.encabezado{
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 5px;
+      }
+      &.mensaje{
+        padding-bottom: 10px;
+      }
+    }
+    .acciones{
+      margin-top: 10px;
+      .accion{
+        padding: 10px;
+        font-size: 12px;
+        color: #6da7ff;
+        border-top: 1px solid rgba($negro,.1);
+        cursor: pointer;
+        &.warning{
+          color: red;
+        }
+      }
+    }
+  }
+}
+
+
+
+.iphoneMock{
+  @include flex;
+  width: 100%;
+  min-height: 100vh;
+  .container{
+    @include flex;
+    width: 90%;
+    margin: 0 auto;
+    padding: 50px 0;
+    overflow: hidden;
+    .interactionInfo{
+      width: 600px;
+      margin: 50px;
+      &.hidden{
+        >*{
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+      }
+      >*{
+        margin-bottom: 10px;
+        transition: ease all .5s;
+        @for $i from 1 through 10 {
+          &:nth-child(#{$i}){
+            transition-delay: #{$i * .1s};
+          }
+        }
+      }
+      h1{
+        font-size: 30px;
+        margin-bottom: 20px;
+      }
+      .importante{
+        &:before{
+          content: "*";
+          margin-right: 5px;
+          color: red;
+        }
+      }
+      .botones{
+        @include flex($jc: flex-start);
+        margin: 20px auto;
+        .boton{
+          padding: 10px 20px;
+          margin-right: 20px;
+          min-width: 225px;
+          color: $blanco;
+          font-size: 12px;
+          text-align: center;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          background-color: $grayDark;
+          box-sizing: border-box;
+          cursor: pointer;
+          &.activo{
+            &:before{
+              content: attr(data-back);
+            }
+          }
+          &:before{
+            content: attr(data-front);
+          }
+        }
+      }
+    }
+    .iphone{
+      width: 320px;
+      height: 640px;
+      border-radius: 45px;
+      position: relative;
+      user-select: none;
+      transition: ease all 1s;
+      &.initAnimation{
+        transform: translateY(200px);
+        opacity: 0;
+        .bordeColor{
+          transform: rotateY(180deg);
+          box-shadow: inset 0 0 7px 1px $blanco;
+          .backSide{
+            opacity: 1;
+            visibility: visible;
+            pointer-events: all;
+          }
+        }
+      }
+      &.powerOn{
+        .bordeColor{
+          .bordeNegro{
+            .logo{
+              opacity: 1;
+              transition-delay: 1s;
+            }
+          }
+        }
+      }
+      &.arrhe{
+        .bordeColor{
+          .bordeNegro{
+            .logo{
+              transform: scale(25);
+              transition-duration: .5s;
+            }
+          }
+        }
+      }
+      &.showBackSide{
+        transform: translateY(-10px);
+        .bordeColor{
+          transform: rotateY(180deg);
+          box-shadow: inset 0 0 7px 1px $blanco;
+          .backSide{
+            opacity: 1;
+            visibility: visible;
+            pointer-events: all;
+          }
+        }
+      }
+      &:before, &:after{
+        content: "";
+        position: absolute;
+        background-color: rgba($blanco,.1);
+        width: 6px;
+        height: 7px;
+        z-index: 1;
+      }
+      &:before{
+        top: 1px;
+        right: 70px;
+      }
+      &:after{
+        bottom: -1px;
+        left: 70px;
+      }
+      .bordeColor{
+        @include flex;
+        height: 100%;
+        width: 100%;
+        background-color: $mainColor;
+        border: 1px solid rgba($blanco,.6);
+        box-shadow: inset 0 0 3px 1px $blanco;
+        border-radius: 45px;
+        position: relative;
+        transition: ease all .5s;
+        &:before, &:after{
+          content: "";
+          position: absolute;
+          top: 65px;
+          background-color: rgba($blanco,.1);
+          width: 7px;
+          height: 6px;
+          z-index: 1;
+        }
+        &:before{
+          left: 0px;
+        }
+        &:after{
+          right: 0px;
+        }
+        .botones{
+          &:before, &:after{
+            content: "";
+            position: absolute;
+            bottom: 65px;
+            background-color: rgba($blanco,.1);
+            width: 7px;
+            height: 6px;
+            z-index: 1;
+          }
+          &:before{
+            left: 0px;
+          }
+          &:after{
+            right: 0px;
+          }
+          >*{
+            position: absolute;
+            left: -3px;
+            width: 3px;
+            background: linear-gradient(90deg, transparent, $mainColor);
+            border-radius: 20px 10px 10px 20px;
+          }
+          .touchID{
+            top: 160px;
+            right: -3px;
+            left: auto;
+            height: 80px;
+            background: linear-gradient(90deg, $mainColor, transparent);
+            border-radius: 10px 20px 20px 10px;
+          }
+          .switch{
+            top: 100px;
+            height: 25px;
+          }
+          .vol{
+            top: 150px;
+            height: 45px;
+            &.down{
+              top: 210px;
+            }
+          }
+        }
+        .backSide{
+          @include flex;
+          position: absolute;
+          width: calc(100% - 12px);
+          height: calc(100% - 12px);
+          border-radius: 40px;
+          background-color: $mainColor;
+          transform: rotateY(180deg);
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+          overflow: hidden;
+          transition: ease all .3s;
+          z-index: 1000;
+          &:before{
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle farthest-corner at 245px 0px , rgba($blanco,.1), transparent);
+          }
+          .camaras{
+            @include flex(column, $jc: space-between, $ac: space-between);
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 120px;
+            height: 120px;
+            padding: 10px;
+            border-radius: 25px;
+            box-sizing: border-box;
+            background: linear-gradient(45deg, rgba($negro,.3), transparent);
+            box-shadow: 1px 1px 10px 0 rgba($negro,.4);
+            &:before{
+              content: "";
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              border-radius: 25px;
+              box-shadow: -10px 0 10px -10px rgba($blanco,.4);
+            }
+            .cam{
+              @include flex;
+              width: 42px;
+              height: 42px;
+              border-radius: 50%;
+              position: relative;
+              &:nth-child(3){
+                margin: auto 0;
+              }
+              &:before, &:after{
+                content: "";
+                position: absolute;
+              }
+              &:before{
+                width: calc(100% + 10px);
+                height: calc(100% + 10px);
+                border-radius: 50%;
+                box-shadow: -2px 2px 8px 0 $negro;
+                background: linear-gradient(45deg, $mainColor 65%, rgba($blanco,.5));
+              }
+              &:after{
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                background-color: $grayDark;
+                border: 9px solid rgba($negro,.2);
+                position: relative;
+                box-sizing: border-box;
+              }
+              .lente{
+                position: absolute;
+                width: 25%;
+                height: 25%;
+                border-radius: 50%;
+                box-shadow: inset 2px 0px 4px -4px $blanco;
+                background: radial-gradient(ellipse farthest-corner at 8px 2px, $mainColor, $negro);
+                z-index: 1;
+              }
+            }
+            .flash, .sensor{
+              position: absolute;
+              right: 20px;
+              width: 22px;
+              height: 22px;
+              border-radius: 50%;
+              &:before{
+                content: "";
+                position: absolute;
+                border-radius: 50%;
+              }
+            }
+            .flash{
+              top: 5px;
+              background-color: $blanco;
+              &:before{
+                width: 100%;
+                height: 100%;
+                background: radial-gradient(#fff291, #ffd5fe);
+              }
+            }
+            .sensor{
+              bottom: 5px;
+              background-color: $negro;
+              &:before{
+                top: -3px;
+                right: -7px;
+                width: 3px;
+                height: 3px;
+                background-color: $negro;
+              }
+            }
+          }
+        }
+        .bordeNegro{
+          @include flex;
+          width: calc(100% - 14px);
+          height: calc(100% - 14px);
+          border-radius: 40px;
+          background-color: $negro;
+          position: relative;
+          overflow: hidden;
+          &:after{
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 40px;
+            border: 7px solid $negro;
+            box-sizing: border-box;
+            pointer-events: none;
+            z-index: 100;
+          }
+          .notch{
+            @include flex;
+            position: absolute;
+            top: 0;
+            width: 150px;
+            height: 32px;
+            border-bottom-left-radius: 17px;
+            border-bottom-right-radius: 17px;
+            background-color: $negro;
+            z-index: 100;
+            &:before, &:after{
+              content: "";
+              position: absolute;
+              top: 0;
+              width: 10px;
+              height: 10px;
+              border-radius: 50%;
+              border: 7px solid transparent;
+            }
+            &:before{
+              left: -17px;
+              border-right-color: $negro;
+              transform: rotate(-50deg);
+            }
+            &:after{
+              right: -17px;
+              border-left-color: $negro;
+              transform: rotate(50deg);
+            }
+            .bocina{
+              @include flex($jc: flex-start);
+              width: 40px;
+              height: 4px;
+              border-radius: 20px;
+              background-color: $grayDark;
+              border: 0.7px solid #171717;
+              box-shadow: inset 0px -0.3px 1px 0px #8c8c8c;
+              position: relative;
+              overflow: hidden;
+              &:before, &:after{
+                content: "";
+                position: absolute;
+              }
+              &:before{
+                width: 0;
+                height: 60%;
+                transform: skew(-10deg);
+                box-shadow: 1px 0 0px 0.2px #313131, 2px 0 0px 0.2px #313131, 3px 0 0px 0.2px #313131, 4px 0 0px 0.2px #313131, 5px 0 0px 0.2px #313131, 6px 0 0px 0.2px #313131, 7px 0 0px 0.2px #313131, 8px 0 0px 0.2px #313131, 9px 0 0px 0.2px #313131, 10px 0 0px 0.2px #313131, 11px 0 0px 0.2px #313131, 12px 0 0px 0.2px #313131, 13px 0 0px 0.2px #313131, 14px 0 0px 0.2px #313131, 15px 0 0px 0.2px #313131, 16px 0 0px 0.2px #313131, 17px 0 0px 0.2px #313131, 18px 0 0px 0.2px #313131, 19px 0 0px 0.2px #313131, 20px 0 0px 0.2px #313131, 21px 0 0px 0.2px #313131, 22px 0 0px 0.2px #313131, 23px 0 0px 0.2px #313131, 24px 0 0px 0.2px #313131, 25px 0 0px 0.2px #313131, 26px 0 0px 0.2px #313131, 27px 0 0px 0.2px #313131, 28px 0 0px 0.2px #313131, 29px 0 0px 0.2px #313131, 30px 0 0px 0.2px #313131, 31px 0 0px 0.2px #313131, 32px 0 0px 0.2px #313131, 33px 0 0px 0.2px #313131, 34px 0 0px 0.2px #313131, 35px 0 0px 0.2px #313131, 36px 0 0px 0.2px #313131, 37px 0 0px 0.2px #313131, 38px 0 0px 0.2px #313131, 39px 0 0px 0.2px #313131;
+              }
+              &:after{
+                width: 95%;
+                height: 0;
+                box-shadow: 1px -0.8px 0px 0.2px #313131, 1px 0px 0px 0.2px #313131, 1px 0.8px 0px 0.2px #313131;
+              }
+            }
+            .camara{
+              @include flex;
+              position: absolute;
+              right: 35px;
+              width: 14px;
+              height: 14px;
+              border-radius: 50%;
+              background-color: $grayDark;
+              &:before, &:after{
+                content: "";
+                position: absolute;
+                border-radius: 50%;
+              }
+              &:before{
+                width: calc(100% - 4px);
+                height: calc(100% - 4px);
+                background: radial-gradient($negro, $mainColor 60%);
+              }
+              &:after{
+                width: 4px;
+                height: 4px;
+                margin-top: 2px;
+                margin-right: 2px;
+                background-color: rgba($blanco,.1);
+              }
+            }
+          }
+          .logo{
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            opacity: 0;
+            transition: ease all .3s;
+            svg{
+              color: $blanco;
+            }
+          }
+          .mainScreen{
+            @include imagen('https://firebasestorage.googleapis.com/v0/b/fotos-3cba1.appspot.com/o/wallpaper.jpg?alt=media&token=059229cc-3823-4d27-834a-7b62cabd69d2');
+            width: calc(100% - 14px);
+            height: calc(100% - 14px);
+            border-radius: 32px;
+            background-color: $blanco;
+            background-color: transparent;
+            background-blend-mode: soft-light;
+            position: relative;
+            overflow: hidden;
+            transition: ease all 1s;
+            &.bloqueado{
+              opacity: 0;
+              pointer-events: none;
+              transition: ease all .2s;
+            }
+            &.blur{
+              background-image: url(https://firebasestorage.googleapis.com/v0/b/fotos-3cba1.appspot.com/o/wallpaperBlur.jpg?alt=media&token=22c91194-dfa0-4ebb-870e-9f585bf35b01);
+              transition-duration: .5s;
+            }
+            &.filterBlur{
+              background-color: rgba($negro,.2);
+              filter: blur(5px);
+              pointer-events: none;
+              transition-duration: .2s;
+              .appScreen{
+                transform: scale(.9);
+                transition-duration: .2s;
+              }
+            }
+            &.shakingApps{
+              .appScreen{
+                .app{
+                  animation: shake .1s linear alternate infinite;
+                  &.widgetFull{
+                    animation: shake-2 .1s linear alternate infinite;
+                  }
+                }
+              }
+              .statusBar{
+                .leftSide, .rightSide{
+                  .operador, .hora, .signal, .datos, .bateria{
+                    opacity: 0;
+                  }
+                  .widgetPlus, .exitShake{
+                    transform: scale(1);
+                  }
+                }
+              }
+              .appScreen{
+                .wrapperDots{
+                  padding: 3px 10px;
+                  border-radius: 20px;
+                  background-color: rgba($blanco,.5);
+                  .dot{
+                    background-color: rgba($negro,.3);
+                  }
+                }
+              }
+            }
+            &.widgetScreenOpen{
+              background-color: rgba($negro, .5);
+              .statusBar{
+                opacity: 0;
+              }
+            }
+            .buscador{
+              @include flex;
+              width: 100%;
+              height: 35px;
+              color: $blanco;
+              font-size: 14px;
+              border-radius: 10px;
+              margin: 10px auto 30px auto;
+              background-color: rgba($blanco,.5);
+              cursor: not-allowed;
+              .icono{
+                width: 15px;
+                height: 15px;
+                margin-right: 7px;
+                position: relative;
+                &:before, &:after{
+                  content: "";
+                  position: absolute;
+                }
+                &:before{
+                  top: 0;
+                  left: 0;
+                  width: 13px;
+                  height: 13px;
+                  border-radius: 50%;
+                  border: 1px solid currentColor;
+                  box-sizing: border-box;
+                }
+                &:after{
+                  bottom: 0;
+                  right: 0;
+                  width: 1px;
+                  height: 5px;
+                  background-color: currentColor;
+                  transform: rotate(-45deg);
+                  transform-origin: bottom left;
+                }
+              }
+            }
+            .statusBar{
+              @include flex($jc: space-between);
+              height: 20px;
+              padding: 5px 20px 0px 20px;
+              padding-right: 12px;
+              transition: ease all .1s;
+              position: relative;
+              z-index: 1;
+              cursor: grab;
+              &.onlyLed{
+                .leftSide, .rightSide{
+                  display: none;
+                }
+              }
+              &.camActiv, &.micActiv{
+                &:after{
+                  content: "";
+                  position: absolute;
+                  top: 7px;
+                  right: 60px;
+                  width: 5px;
+                  height: 5px;
+                  border-radius: 50%;
+                  background-color: #00dc54;
+                }
+              }
+              &.micActiv{
+                &:after{
+                  background-color: #ff8e00;
+                }
+              }
+              &.mov{
+                transform: translateY(-100%);
+              }
+              .leftSide{
+                color: $blanco;
+                font-size: 10px;
+                text-transform: uppercase;
+                position: relative;
+                >*{
+                  &.hidden{
+                    display: none;
+                  }
+                }
+                .widgetPlus{
+                  @include flex;
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  width: 40px;
+                  height: 17px;
+                  border-radius: 20px;
+                  background-color: rgba($blanco,.5);
+                  transform: scale(0);
+                  overflow: hidden;
+                  cursor: pointer;
+                  transition: ease all .2s;
+                  &:before, &:after{
+                    position: absolute;
+                    content: "";
+                    width: 8px;
+                    height: 1px;
+                    background-color: rgba($negro, .5);
+                  }
+                  &:after{
+                    transform: rotate(90deg);
+                  }
+                }
+              }
+              .rightSide{
+                @include flex($jc: flex-end);
+                position: relative;
+                .signal{
+                  @include flex;
+                  width: 18px;
+                  height: 10px;
+                  position: relative;
+                  overflow: hidden;
+                  &.mid{
+                    &:before{
+                      opacity: .4;
+                    }
+                  }
+                  &.low{
+                    &:before, &:after, .bar::before{
+                      opacity: .4;
+                    }
+                  }
+                  &:before, &:after{
+                    content: "";
+                    position: absolute;
+                    bottom: 0;
+                    width: 3px;
+                    border-radius: 5px;
+                    background-color: $blanco;
+                  }
+                  &:before{
+                    right: 0;
+                    height: 100%;
+                  }
+                  &:after{
+                    right: 4px;
+                    height: 80%;
+                  }
+                  .bar{
+                    &:before, &:after{
+                      content: "";
+                      position: absolute;
+                      bottom: 0;
+                      width: 3px;
+                      border-radius: 5px;
+                      background-color: $blanco;
+                    }
+                    &:before{
+                      right: 8px;
+                      height: 60%;
+                    }
+                    &:after{
+                      right: 12px;
+                      height: 40%;
+                    }
+                  }
+                }
+                .datos{
+                  margin: 0 3px;
+                  color: $blanco;
+                  font-size: 10px;
+                }
+                .wifi{
+                  @include flex;
+                  width: 18px;
+                  height: 12px;
+                  margin: 0 3px;
+                  position: relative;
+                  overflow: hidden;
+                  &.mid{
+                    &:before{
+                      opacity: .4;
+                    }
+                  }
+                  &.low{
+                    &:before, &:after{
+                      opacity: .4;
+                    }
+                  }
+                  .dot{
+                    position: absolute;
+                    bottom: -2px;
+                    width: 4px;
+                    height: 2px;
+                    border-radius: 50%;
+                    border: 2px solid transparent;
+                    border-top-color: $blanco;
+                  }
+                  &:before, &:after{
+                    content: "";
+                    position: absolute;
+                    border: 2px solid transparent;
+                    border-radius: 50%;
+                    border-top-color: $blanco;
+                  }
+                  &:before{
+                    top: 0;
+                    width: 100%;
+                    height: 8px;
+                  }
+                  &:after{
+                    top: 4px;
+                    width: 10px;
+                    height: 3px;
+                  }
+                }
+                .bateria{
+                  @include flex;
+                  width: 15px;
+                  height: 8px;
+                  border-radius: 2px;
+                  border: 1px solid rgba($blanco,.5);
+                  position: relative;
+                  &.mid{
+                    &:after{
+                      width: 50%;
+                    }
+                  }
+                  &.low{
+                    &:after{
+                      width: 20%;
+                      background-color: #ffe600;
+                    }
+                  }
+                  &:before, &:after{
+                    content: "";
+                    position: absolute;
+                    background-color: $blanco;
+                  }
+                  &:before{
+                    right: -2px;
+                    width: 2px;
+                    height: 50%;
+                    border-top-right-radius: 1px;
+                    border-bottom-right-radius: 1px;
+                  }
+                  &:after{
+                    left: 1px;
+                    width: 100%;
+                    height: 6px;
+                    border-radius: 1px;
+                    max-width: calc(100% - 2px);
+                  }
+                }
+                .exitShake{
+                  @include flex;
+                  position: absolute;
+                  top: 0;
+                  right: 0;
+                  width: 40px;
+                  height: 17px;
+                  font-size: 10px;
+                  font-weight: 600;
+                  border-radius: 20px;
+                  background-color: rgba($blanco,.5);
+                  transform: scale(0);
+                  overflow: hidden;
+                  cursor: pointer;
+                  transition: ease all .2s;
+                }
+              }
+            }
+            .lockScreen{
+              @include flex(column, $jc: space-between);
+              position: absolute;
+              width: 100%;
+              height: calc(100% - 25px);
+              padding: 30px;
+              box-sizing: border-box;
+              cursor: grab;
+              transition: ease all .4s;
+              &.hidden{
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(-50%);
+              }
+              &:hover{
+                .unlockBar{
+                  opacity: 1;
+                }
+              }
+              .up{
+                color: $blanco;
+                text-align: center;
+                .lockIcon{
+                  width: 18px;
+                  height: 14px;
+                  margin: 10px auto 5px auto;
+                  border-radius: 2px;
+                  background-color: $blanco;
+                  position: relative;
+                  &:before{
+                    content: "";
+                    position: absolute;
+                    top: -10px;
+                    left: 0;
+                    right: 0;
+                    margin: auto;
+                    width: 10px;
+                    height: 20px;
+                    border-radius: 10px;
+                    border: 2px solid $blanco;
+                  }
+                }
+                .hora{
+                  font-size: 60px;
+                  font-weight: 300;
+                }
+                .fecha{
+                  font-size: 14px;
+                }
+              }
+              .down{
+                @include flex($jc: space-between);
+                width: 100%;
+                .sysIcon{
+                  width: 20px;
+                  height: 20px;
+                  padding: 10px;
+                  border-radius: 50%;
+                  background-color: rgba($negro,.5);
+                  color: $blanco;
+                  cursor: pointer;
+                  svg{
+                    width: 100%;
+                    height: 100%;
+                    path, circle{
+                      fill: currentColor;
+                    }
+                  }
+                }
+              }
+              .unlockBar{
+                position: absolute;
+                bottom: 8px;
+                width: 40%;
+                height: 4px;
+                border-radius: 20px;
+                background-color: rgba($blanco,.7);
+                opacity: 0;
+                transition: ease all .2s;
+                &:hover{
+                  &:before{
+                    opacity: 1;
+                    transform: none;
+                  }
+                }
+                &:before{
+                  content: attr(data-msj);
+                  position: absolute;
+                  bottom: 100%;
+                  left: 0;
+                  right: 0;
+                  max-width: 100px;
+                  margin: 0 auto;
+                  padding-bottom: 5px;
+                  color: $blanco;
+                  font-size: 10px;
+                  text-align: center;
+                  opacity: 0;
+                  transform: translateY(5px);
+                  transition: ease all .1s;
+                }
+              }
+            }
+            .appScreen{
+              @include flex(column, $jc: space-between);
+              position: absolute;
+              width: 100%;
+              height: calc(100% - 25px);
+              padding: 10px;
+              box-sizing: border-box;
+              cursor: grab;
+              transition: ease all .4s;
+              &.moveOut{
+                transition-duration: .2s;
+                transform: translateX(100%);
+              }
+              &.hidden{
+                opacity: 0;
+                visibility: hidden;
+                transform: scale(1.5);
+              }
+              .app{
+                width: 64px;
+                position: relative;
+                cursor: pointer;
+                .notificacion, .removeApp{
+                  @include flex;
+                  position: absolute;
+                  top: 0;
+                  right: 0;
+                  width: 18px;
+                  height: 18px;
+                  color: $blanco;
+                  font-size: 10px;
+                  border-radius: 50%;
+                  background-color: #de4046;
+                }
+                .removeApp{
+                  left: 0;
+                  right: auto;
+                  background-color: #e6f2ff;
+                  cursor: pointer;
+                  &:after{
+                    content: "";
+                    position: absolute;
+                    width: 50%;
+                    height: 1px;
+                    background-color: rgba($negro,.5);
+                  }
+                }
+                .icono{
+                  @include imagen;
+                  width: 50px;
+                  height: 50px;
+                  margin: 3px auto;
+                  border-radius: 10px;
+                  background-color: $blanco;
+                  overflow: hidden;
+                }
+                .nombre{
+                  height: 13px;
+                  color: $blanco;
+                  font-size: 10px;
+                  text-align: center;
+                  margin-bottom: 7px;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
+                  overflow: hidden;
+                }
+              }
+              .mainApps{
+                width: 100%;
+                max-width: 256px;
+                height: calc(100% - 25px - 85px);
+                margin: 0 auto;
+                overflow: hidden;
+              }
+              .wrapperApps{
+                @include flex(row, nowrap, center, flex-start);
+                width: 100%;
+                height: 100%;
+                transition: ease all 0.2s;
+                .grupo{
+                  @include flex(row, wrap, flex-start, flex-start, flex-start);
+                  width: 100%;
+                  height: 100%;
+                  min-width: 100%;
+                  .app{
+                    height: 76px;
+                    &.widgetFull{
+                      width: 100%;
+                      height: calc(76px * 2);
+                      .icono{
+                        width: 236px;
+                        height: calc(100% - 26px);
+                      }
+                    }
+                    &[data-app="widgetFullCalendario"]{
+                      .icono{
+                        @include flex;
+                        padding: 10px;
+                        box-sizing: border-box;
+                        .eventos{
+                          width: calc(100% - 112px);
+                          font-size: 12px;
+                        }
+                        .calendarioWrapper{
+                          width: 112px;
+                          .mes{
+                            .mesName{
+                              color: #d24f54;
+                              font-size: 10px;
+                              font-weight: 600;
+                              letter-spacing: 1px;
+                              text-transform: uppercase;
+                            }
+                            .calendarioTabla{
+                              .tablaHeader, .tablaContent{
+                                @include flex($jc: flex-start);
+                                >*{
+                                  width: 16px;
+                                  text-align: center;
+                                  font-size: 8px;
+                                  font-weight: 600;
+                                }
+                              }
+                              .tablaHeader{
+                                margin: 5px auto;
+                              }
+                              .tablaContent{
+                                .diaNum{
+                                  @include flex;
+                                  height: 16px;
+                                  &.activo{
+                                    color: $blanco;
+                                    background-color: #d24f54;
+                                    border-radius: 50%;
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                    &.calendarioDinamico{
+                      .fechaWrapper{
+                        @include flex(column);
+                        width: 100%;
+                        height: 100%;
+                        padding: 5px;
+                        box-sizing: border-box;
+                        .diaNom{
+                          color: #d24f54;
+                          font-size: 10px;
+                          font-weight: 600;
+                          letter-spacing: 1px;
+                          text-transform: uppercase;
+                        }
+                        .diaNum{
+                          color: $negro;
+                          font-size: 22px;
+                          font-weight: 300;
+                        }
+                      }
+                    }
+                    &.relojDinamico{
+                      .relojWrapper{
+                        @include flex;
+                        width: 100%;
+                        height: 100%;
+                        padding: 3px;
+                        background-color: $negro;
+                        box-sizing: border-box;
+                        .reloj{
+                          width: 100%;
+                          height: 100%;
+                          border-radius: 50%;
+                          background-color: $blanco;
+                          position: relative;
+                          overflow: hidden;
+                          .numeros{
+                            .numero{
+                              position: absolute;
+                              bottom: 50%;
+                              left: 0;
+                              right: 0;
+                              margin: auto;
+                              width: 10px;
+                              height: calc(50% - 1px);
+                              color: $negro;
+                              font-size: 5px;
+                              font-weight: 600;
+                              text-align: center;
+                              transform-origin: bottom;
+                              @for $i from 1 through 12{
+                                &:nth-child(#{$i}){
+                                  transform: rotate((360deg / 12) * $i);
+                                  &:before{
+                                    transform: rotate((360deg / 12) * -$i);
+                                  }
+                                }
+                              }
+                              &:before{
+                                content: attr(data-num);
+                                display: block;
+                              }
+                            }
+                          }
+                          .manecillas{
+                            &:before{
+                              content: "";
+                              position: absolute;
+                              top: 0;
+                              left: 0;
+                              right: 0;
+                              bottom: 0;
+                              margin: auto;
+                              width: 3px;
+                              height: 3px;
+                              border-radius: 50%;
+                              background-color: $negro;
+                            }
+                            .manecilla{
+                              position: absolute;
+                              width: 100%;
+                              height: 100%;
+                              &.hora{
+                                .barra{
+                                  animation-duration: 21600s;
+                                  &:before{
+                                    height: calc(50% - 10px);
+                                  }
+                                }
+                              }
+                              &.minutos{
+                                .barra{
+                                  animation-duration: 3600s;
+                                }
+                              }
+                              &.segundos{
+                                .barra{
+                                  &:before{
+                                    background-color: #d24f54;
+                                    bottom: 40%;
+                                    height: calc(60% - 4px);
+                                    animation-duration: 60s;
+                                    animation-timing-function: steps(60);
+                                  }
+                                }
+                              }
+                              .barra{
+                                position: absolute;
+                                width: 100%;
+                                height: 100%;
+                                animation: relojAnalogico 60s infinite linear;
+                                &:before{
+                                  content: "";
+                                  position: absolute;
+                                  bottom: 50%;
+                                  left: 0;
+                                  right: 0;
+                                  margin: auto;
+                                  width: 1px;
+                                  height: calc(50% - 4px);
+                                  background-color: $negro;
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+              .wrapperDots{
+                @include flex;
+                .dot{
+                  width: 8px;
+                  height: 8px;
+                  margin: 5px;
+                  border-radius: 50%;
+                  background-color: rgba($blanco,.5);
+                  &.activo{
+                    background-color: $blanco;
+                  }
+                }
+              }
+              .deckApps{
+                @include flex;
+                width: 100%;
+                padding: 10px 5px;
+                border-radius: 25px;
+                background-color: rgba($blanco,.3);
+                box-sizing: border-box;
+              }
+            }
+            .widgetCenter{
+              @include flex(column, $jc: flex-start);
+              position: absolute;
+              width: 100%;
+              height: calc(100% - 25px);
+              padding: 10px;
+              box-sizing: border-box;
+              cursor: grab;
+              transition: ease all .2s;
+              &.hidden{
+                transform: translateX(-100%);
+              }
+              .contenido{
+                @include flex($ai: stretch, $jc: space-between);
+                width: 100%;
+                .block{
+                  @include flex;
+                  width: 100%;
+                  padding: 10px;
+                  border-radius: 15px;
+                  box-sizing: border-box;
+                  background-color: rgba($blanco,.5);
+                  &:not(:first-child){
+                    margin-top: 15px;
+                  }
+                  &.midd{
+                    width: 48%;
+                  }
+                }
+                .actions{
+                  .action{
+                    @include flex;
+                    width: 100%;
+                    padding: 10px 0;
+                    border-bottom: 1px solid rgba($negro,.1);
+                    &:first-child{
+                      padding-top: 0;
+                    }
+                    &:last-child{
+                      padding-bottom: 0;
+                      border: 0;
+                    }
+                    .icono{
+                      @include imagen;
+                      width: 40px;
+                      height: 40px;
+                      margin-right: 5px;
+                      border-radius: 10px;
+                      background-color: $blanco;
+                    }
+                    .textos{
+                      width: calc(100% - 45px);
+                      p{
+                        font-size: 10px;
+                        &.actionName{
+                          color: $negro;
+                          font-size: 11px;
+                          font-weight: 600;
+                        }
+                      }
+                    }
+                  }
+                }
+                .eventos{
+                  flex-direction: column-reverse;
+                  align-items: flex-start;
+                  background-color: $blanco;
+                  .txt{
+                    padding: 15px 0;
+                    font-size: 12px;
+                  }
+                  .fechaWrapper{
+                    .diaNom{
+                      color: #d24f54;
+                      font-size: 10px;
+                      font-weight: 600;
+                      letter-spacing: 1px;
+                      text-transform: uppercase;
+                    }
+                    .diaNum{
+                      color: $negro;
+                      font-size: 22px;
+                      font-weight: 300;
+                    }
+                  }
+                }
+                .bateriaInfo{
+                  flex-direction: column;
+                  align-items: flex-start;
+                  align-content: flex-start;
+                  &:after{
+                    content: attr(data-carga)'%';
+                    color: $negro;
+                    font-size: 30px;
+                  }
+                  .iconoWrapper{
+                    @include flex;
+                    width: 35px;
+                    height: 35px;
+                    border-radius: 50%;
+                    margin-bottom: 20px;
+                    border: 3px solid rgba($negro, .3);
+                    position: relative;
+                    &:after{
+                      content: "";
+                      position: absolute;
+                      width: 100%;
+                      height: 100%;
+                      border-radius: 50%;
+                      border: 3px solid #67ba6e;
+                      border-left-color: transparent;
+                      border-top-color: transparent;
+                      transform: rotate(-35deg);
+                    }
+                    svg{
+                      width: 20px;
+                      height: 20px;
+                      path, circle{
+                        fill: none;
+                        stroke: $grayDark;
+                        stroke-width: 2;
+                        stroke-linecap: round;
+                        stroke-linejoin: round;
+                      }
+                    }
+                  }
+                }
+                .tiempoPantalla{
+                  justify-content: space-between;
+                  background-color: $blanco;
+                  .timepo{
+                    width: 100%;
+                    color: $negro;
+                    font-size: 20px;
+                    text-align: left;
+                  }
+                  .app{
+                    @include flex;
+                    width: 48%;
+                    margin-top: 10px;
+                    .icono{
+                      @include imagen;
+                      width: 30px;
+                      height: 30px;
+                      margin-right: 5px;
+                      border-radius: 7px;
+                      background-color: $blanco;
+                    }
+                    .textos{
+                      width: calc(100% - 35px);
+                      p{
+                        font-size: 10px;
+                        color: rgba($negro,.3);
+                        &.actionName{
+                          color: $negro;
+                          font-size: 11px;
+                        }
+                      }
+                    }
+                  }
+                }
+                .editButton{
+                  margin: 20px auto 0 auto;
+                  padding: 4px 12px;
+                  color: $negro;
+                  font-size: 12px;
+                  border-radius: 20px;
+                  background-color: rgba($blanco,.5);
+                  cursor: not-allowed;
+                }
+              }
+            }
+            .widgetScreen{
+              @include flex($ac: flex-end);
+              position: absolute;
+              bottom: 0;
+              width: 100%;
+              height: 100%;
+              background-color: rgba($negro,.3);
+              transition: ease transform .2s, ease background-color .3s .2s;
+              &.hidden{
+                transform: translateY(100%);
+                background-color: transparent;
+                .wrapper{
+                  &:before{
+                    opacity: 0;
+                  }
+                }
+              }
+              .wrapper{
+                background-color: #eeeeee;
+                width: 100%;
+                height: 90%;
+                padding: 10px 20px;
+                border-radius: 25px;
+                position: relative;
+                box-sizing: border-box;
+                &:before{
+                  content: "";
+                  position: absolute;
+                  left: 50%;
+                  width: 30px;
+                  height: 4px;
+                  border-radius: 20px;
+                  background-color: #b2b2b2;
+                  transform: translateX(-50%);
+                  transition: ease all .5s .5s;
+                }
+                .buscador{
+                  color: #666;
+                  background-color: #e2e2e2;
+                }
+                .widgetWrapper{
+                  @include flex($jc: space-between);
+                  width: 100%;
+                  .widget{
+                    width: 48%;
+                    margin-bottom: 15px;
+                    &.full{
+                      width: 100%;
+                    }
+                    .preview{
+                      @include flex;
+                      width: 100%;
+                      min-height: 110px;
+                      padding: 10px;
+                      border-radius: 20px;
+                      background-color: $blanco;
+                      box-shadow: 0 2px 10px 0 rgba($negro,.1);
+                      box-sizing: border-box;
+                      &:before{
+                        content: "Aquí iría un widget pero no lo termine xD";
+                        display: block;
+                        width: 100%;
+                        font-size: 10px;
+                        text-align: center;
+                      }
+                    }
+                    .nombre{
+                      margin-top: 5px;
+                      color: $negro;
+                      font-size: 10px;
+                      text-align: center;
+                    }
+                  }
+                }
+              }
+            }
+            .controlCenter{
+              @include flex;
+              position: absolute;
+              top: 0;
+              width: 100%;
+              height: 100%;
+              backdrop-filter: blur(15px);
+              cursor: grab;
+              transition: cubic-bezier(0.68, -0.55, 0.27, 1.55) all .5s;
+              &.hidden{
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+                transform: translateY(-100px);
+              }
+              .content{
+                @include flex($jc: space-between);
+                width: 100%;
+                padding: 10px 20px;
+                box-sizing: border-box;
+                .iconWrapper-wX2{
+                  @include flex($jc: space-between, $ac: space-between);
+                  width: 120px;
+                  height: 120px;
+                  margin-bottom: 20px;
+                  border-radius: 20px;
+                  color: $blanco;
+                  box-sizing: border-box;
+                  &.padding{
+                    padding: 10px;
+                  }
+                }
+                .iconItem{
+                  @include flex;
+                  width: 25px;
+                  height: 25px;
+                  padding: 15px;
+                  margin-bottom: 10px;
+                  border-radius: 15px;
+                  background-color: rgba($negro,.5);
+                  position: relative;
+                  cursor: pointer;
+                  &.full{
+                    width: 100%;
+                  }
+                  &.lampara{
+                    &.activo{
+                      background-color: rgba($blanco,.9);
+                      svg{
+                        color: #3777e4;
+                      }
+                    }
+                  }
+                  &.grabarPantalla{
+                    &.activo{
+                      background-color: rgba($blanco,.9);
+                      svg{
+                        color: red;
+                        circle{
+                          &.filled{
+                            transform-origin: center;
+                            animation: grabarPantalla 1s linear infinite;
+                          }
+                        }
+                      }
+                    }
+                  }
+                  svg{
+                    width: 25px;
+                    height: 25px;
+                    min-width: 25px;
+                    color: $blanco;
+                    path, circle, rect{
+                      stroke: currentColor;
+                      fill: none;
+                      stroke-width: 2;
+                      stroke-miterlimit: 10;
+                      &.filled{
+                        stroke: none;
+                        fill: currentColor;
+                      }
+                    }
+                  }
+                }
+                .iconsGroup{
+                  background-color: rgba($negro,.5);
+                  .icon{
+                    cursor: pointer;
+                    margin: 5px;
+                    &.activo{
+                      .ico{
+                        background-color: #3777e4;
+                      }
+                    }
+                    &.modoVuelo{
+                      &.activo{
+                        .ico{
+                          background-color: #ff8e00;
+                        }
+                      }
+                    }
+                    &.datosCelulares{
+                      &.activo{
+                        .ico{
+                          background-color: #00dc54;
+                        }
+                      }
+                    }
+                    .ico{
+                      width: 16px;
+                      height: 16px;
+                      padding: 12px;
+                      border-radius: 50%;
+                      background-color: rgba($blanco,.5);
+                      transition: ease all .3s;
+                      svg{
+                        width: 100%;
+                        height: 100%;
+                        color: $blanco;
+                        path{
+                          fill: currentColor;
+                        }
+                      }
+                    }
+                    .txt{
+                      display: none;
+                    }
+                  }
+                }
+                .musicWdg{
+                  align-content: center;
+                  justify-content: center;
+                  background-color: rgba($negro,.5);
+                  p{
+                    text-align: center;
+                    font-size: 14px;
+                    &.artistName{
+                      font-size: 12px;
+                      color: rgba($blanco,.5);
+                    }
+                  }
+                  .icons{
+                    @include flex($jc: space-between);
+                    width: 100%;
+                    margin-top: 20px;
+                    .icon{
+                      width: 20px;
+                      height: 20px;
+                      svg{
+                        width: 100%;
+                        height: 100%;
+                        path{
+                          fill: currentColor;
+                        }
+                      }
+                    }
+                  }
+                }
+                .displayOptions{
+                  .actionIcon{
+                    transition: ease all .3s;
+                    &.activo{
+                      background-color: rgba($blanco,.9);
+                      &.lockOrientacion{
+                        .lockIcon{
+                          background-color: #d24f54;
+                          &:before{
+                            border-color: #d24f54;
+                          }
+                        }
+                        svg{
+                          color: #d24f54;
+                        }
+                      }
+                    }
+                  }
+                  .lockIcon{
+                    position: absolute;
+                    width: 8px;
+                    height: 6px;
+                    border-radius: 2px;
+                    background-color: $blanco;
+                    margin-right: 2px;
+                    margin-top: 4px;
+                    &:before{
+                      content: "";
+                      position: absolute;
+                      top: -4px;
+                      left: 0;
+                      right: 0;
+                      margin: auto;
+                      width: 2px;
+                      height: 6px;
+                      border-radius: 10px;
+                      border: 2px solid $blanco;
+                    }
+                  }
+                  .moon{
+                    &.activo{
+                      svg{
+                        path{
+                          fill: #7c517c;
+                        }
+                      }
+                    }
+                    svg{
+                      path{
+                        fill: $blanco;
+                      }
+                    }
+                  }
+                  .duplicate{
+                    flex-wrap: nowrap;
+                    p{
+                      font-size: 10px;
+                      margin-left: 10px;
+                    }
+                  }
+                }
+                .fullBars{
+                  .fullBar{
+                    align-content: flex-end;
+                    height: calc(100% - 30px);
+                    overflow: hidden;
+                    cursor: default;
+                    &.volumen{
+                      &:before{
+                        height: 45%;
+                      }
+                    }
+                    &:before{
+                      content: "";
+                      position: absolute;
+                      bottom: 0;
+                      width: 100%;
+                      height: 100%;
+                      background-color: rgba($blanco,.9);
+                    }
+                    svg{
+                      color: rgba($negro,.4);
+                      position: relative;
+                    }
+                  }
+                }
+                .textGroup{
+                  color: $blanco;
+                  font-size: 12px;
+                  text-align: center;
+                  margin-bottom: 20px;
+                  .icono{
+                    width: 25px;
+                    height: 25px;
+                    margin: 10px auto;
+                    color: $blanco;
+                    svg{
+                      width: 100%;
+                      height: 100%;
+                      path, circle{
+                        fill: none;
+                        stroke-width: 2;
+                        stroke: currentColor;
+                        stroke-linecap: round;
+                        stroke-miterlimit: 10;
+                      }
+                    }
+                  }
+                  .link{
+                    display: inline-block;
+                    margin-top: 5px;
+                    color: #3777e4;
+                    cursor: pointer;
+                  }
+                }
+              }
+              .hiddenCC{
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+                height: 25px;
+                text-align: center;
+                &:before{
+                  content: "";
+                  display: inline-block;
+                  width: 150px;
+                  height: 4px;
+                  border-radius: 20px;
+                  background-color: rgba($blanco,.7);
+                }
+              }
+            }
+            .camaraApp{
+              background-color: #000;
+              position: absolute;
+              top: 0;
+              left: 0;
+              bottom: 0;
+              right: 0;
+              margin: auto;
+              padding-top: 25px;
+              width: 100%;
+              height: 100%;
+              overflow: hidden;
+              box-sizing: border-box;
+              transition: ease all .2s;
+              cursor: grab;
+              &:hover{
+                &:after{
+                  background-color: $blanco;
+                }
+              }
+              &:after{
+                content: "";
+                position: absolute;
+                bottom: 10px;
+                left: 50%;
+                width: 120px;
+                height: 4px;
+                border-radius: 20px;
+                background-color: rgba($blanco,.1);
+                transform: translateX(-50%);
+                transition: ease all .5s;
+              }
+              &.hidden{
+                width: 0;
+                height: 0;
+                opacity: 0;
+                border-radius: 50%;
+                pointer-events: none;
+                transition-duration: .3s;
+              }
+              .camIco{
+                @include flex;
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background-color: rgba($blanco,.1);
+                svg{
+                  width: 50%;
+                  height: 50%;
+                  path{
+                    fill: none;
+                    stroke: $blanco;
+                    stroke-width: 4;
+                    stroke-miterlimit: 10;
+                  }
+                }
+              }
+              .topBar{
+                @include flex($jc: space-between, $ac: flex-start);
+                width: 100%;
+                height: 50px;
+                padding: 0 20px;
+                box-sizing: border-box;
+                .chevronUp, .flash, .circles{
+                  svg{
+                    width: 80%;
+                    height: 80%;
+                  }
+                }
+                .flash, .circles{
+                  background-color: transparent;
+                }
+              }
+              .camaraArea{
+                @include flex;
+                width: 100%;
+                height: 400px;
+                position: relative;
+                &:before, &:after{
+                  content: "";
+                  position: absolute;
+                  z-index: 1;
+                }
+                &:before{
+                  width: calc(100% / 3);
+                  height: 100%;
+                  border-left: 1px solid rgba($blanco,.3);
+                  border-right: 1px solid rgba($blanco,.3);
+                }
+                &:after{
+                  width: 100%;
+                  height: calc(100% / 3);
+                  border-top: 1px solid rgba($blanco,.3);
+                  border-bottom: 1px solid rgba($blanco,.3);
+                }
+                video{
+                  width: 100%;
+                  height: 100%;
+                  object-fit: cover;
+                }
+              }
+              .modosCamara{
+                @include flex($wrap: nowrap);
+                width: 100%;
+                height: 30px;
+                overflow: hidden;
+                position: relative;
+                &:before, &:after{
+                  content: "";
+                  position: absolute;
+                  top: 0;
+                  width: 50px;
+                  height: 100%;
+                  z-index: 1;
+                }
+                &:before{
+                  left: 0;
+                  background: linear-gradient(90deg, $negro, transparent);
+                }
+                &:after{
+                  right: 0;
+                  background: linear-gradient(90deg, transparent, $negro);
+                }
+                .modo{
+                  min-width: max-content;
+                  margin: 0 10px;
+                  color: $blanco;
+                  font-size: 10px;
+                  text-transform: uppercase;
+                  &.activo{
+                    color: #a69c5e;
+                  }
+                }
+              }
+              .obturadorArea{
+                @include flex($jc: space-between);
+                width: 100%;
+                padding: 10px 20px;
+                box-sizing: border-box;
+                .imgPreview{
+                  @include imagen;
+                  background-color: red;
+                  width: 40px;
+                  height: 40px;
+                  border-radius: 3px;
+                }
+                .obturador{
+                  @include flex;
+                  width: 50px;
+                  height: 50px;
+                  border-radius: 50%;
+                  background-color: $blanco;
+                  &:before{
+                    content: "";
+                    width: calc(100% - 8px);
+                    height: calc(100% - 8px);
+                    border: 1px solid $negro;
+                    border-radius: 50%;
+                  }
+                }
+                .camIco{
+                  width: 30px;
+                  height: 30px;
+                }
+              }
+            }
+          }
+        }
+      }
+      .logo{
+        width: 80px;
+        height: 80px;
+        position: relative;
+        svg{
+          width: 100%;
+          height: 100%;
+          color: rgba($negro,.3);
+          path{
+            fill: currentColor;
+          }
+        }
+      }
+    }
+    @media only screen and (max-width: 700px){
+      .interactionInfo{
+        p, h1{
+          text-align: center;
+        }
+        .botones{
+          flex-direction: column;
+          justify-content: center;
+          .boton{
+            margin-right: 0;
+            margin-bottom: 20px;
+          }
+        }
+      }
+    }
+  }
+}
