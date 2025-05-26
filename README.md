@@ -46,7 +46,7 @@
 
 ### 🔗 Connect With Me
 
-- [LinkedIn (Add Your Link)](https://linkedin.com/)
+- [LinkedIn (Add Your Link)]([https://linkedin.com/](https://www.linkedin.com/in/mohit-kumar-ranjan-439b942b5/))
 - [GitHub Profile](https://github.com/mohitdeveloper9334)
 
 ---
