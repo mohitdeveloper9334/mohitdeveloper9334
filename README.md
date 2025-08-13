@@ -13,7 +13,7 @@
 
 ### 💻 About Me
 
-- 👨‍🎓 I’m a **2nd year B.Tech student** in **Electronics and Communication Engineering**
+- 👨‍🎓 I’m a **3rd year B.Tech student** in **Electronics and Communication Engineering**
 - 💻 Currently learning **Web Development** with a focus on **frontend**
 - 🎯 Goal: To build real-world responsive websites and host them on GitHub
 - 📫 Contact me at: **mohitkumarranjan7033@gmail.com**
