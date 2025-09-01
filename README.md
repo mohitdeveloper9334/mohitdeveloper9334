@@ -23,8 +23,8 @@
 ### 🧰 Tech Stack
 
 - ✅ HTML5  
-- 🧪 CSS3 *(Almost completed)*
-- javascript*(not started)*
+- 🧪 CSS3 
+- javascript*(started)*
 - 🧰 Tools: Git, GitHub, Visual Studio Code  
 
 ---
